@@ -1,42 +1,44 @@
-import type { CollectionConfig } from 'payload/types';
+import type { CollectionConfig } from "payload/types";
 import {
   HTMLConverterFeature,
   lexicalEditor,
   lexicalHTML,
-} from '@payloadcms/richtext-lexical';
+} from "@payloadcms/richtext-lexical";
+
+
 
 const Blog: CollectionConfig = {
-  slug: 'Blog',
+  slug: "Blog",
   access: {
     read: ({ req }) => true,
   },
   fields: [
     {
-      name: 'Cover_Image',
-      type: 'upload',
-      relationTo: 'media',
+      name: "Cover_Image",
+      type: "upload",
+      relationTo: "media",
     },
     {
-      name:'slug',
-      type:"text",
-      unique:true,
+      name: "slug",
+      type: "text",
+      unique: true,
       index: true,
     },
     {
-      name: 'Title', 
-      type: 'text',
+      name: "Title",
+      type: "text",
     },
     {
-      name: 'Secondary_Text',
-      type: 'text',
+      name: "Secondary_Text",
+      type: "text",
     },
     {
-      name: 'Tag',
-      type: 'text',
+      name: "Tag",
+      type: "text",
     },
     {
-      name: 'Blog_content',
-      type: 'richText',
+      name: "Blog_content",
+      type: "richText",
       editor: lexicalEditor({
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
@@ -44,10 +46,10 @@ const Blog: CollectionConfig = {
         ],
       }),
     },
-    lexicalHTML('Blog_content', { name: 'Blog_content_html' }),
+    lexicalHTML("Blog_content", { name: "Blog_content_html" }),
     {
-      name: 'Blog_content_output',
-      type: 'textarea',
+      name: "Blog_content_output",
+      type: "textarea",
       admin: {
         readOnly: true,
       },
@@ -56,10 +58,10 @@ const Blog: CollectionConfig = {
   hooks: {
     afterRead: [
       async ({ doc, req }) => {
-        const htmlContentField = 'Blog_content_html'; 
-        const htmlContent = doc[htmlContentField]; 
+        const htmlContentField = "Blog_content_html";
+        const htmlContent = doc[htmlContentField];
 
-        doc.Blog_content_output = htmlContent || 'test'; 
+        doc.Blog_content_output = htmlContent || "test";
 
         return doc;
       },

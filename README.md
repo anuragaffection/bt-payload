@@ -16,6 +16,9 @@ To spin up the project locally, follow these steps:
 
 That's it! Changes made in `./src` will be reflected in your app.
 
+## SEO Plugin 
+- yarn add @payloadcms/plugin-seo
+
 ### Docker
 
 Alternatively, you can use [Docker](https://www.docker.com) to spin up this project locally. To do so, follow these steps:

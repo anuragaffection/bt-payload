@@ -1,5 +1,12 @@
 import path from "path";
 
+import seoPlugin from "@payloadcms/plugin-seo";
+import {
+  GenerateDescription,
+  GenerateTitle,
+  PluginConfig,
+} from "@payloadcms/plugin-seo/types";
+
 import { payloadCloud } from "@payloadcms/plugin-cloud";
 import { mongooseAdapter } from "@payloadcms/db-mongodb";
 import { webpackBundler } from "@payloadcms/bundler-webpack";
@@ -16,13 +23,12 @@ import Sponsors from "./collections/Sponsors";
 import Players from "./collections/Players";
 import Blog from "./collections/Blog";
 import AcademyBlog from "./collections/AcademyBlog";
-
 import Media from "./collections/Media";
 import Sections from "./collections/Sections";
-
 import Carousel from "./collections/Carousel";
 import MediaCollectionUpload from "./collections/MediaCollectionUpload";
 import MediaCollection from "./collections/MediaCollection";
+
 import { Teams } from "./collections/Teams";
 import { Fixtures } from "./collections/Fixtures";
 
@@ -39,6 +45,18 @@ const adapter = s3Adapter({
   bucket: process.env.R2_BUCKET_NAME,
 });
 
+interface BlogDoc {
+  Title?: {
+    value: string; // Assuming value is a string
+  };
+  Secondary_Text?: {
+    value: string;
+  };
+  Cover_Image?: {
+    value: string | { url: string }; // Depending on how the image data is stored
+  };
+}
+
 let uploadOptions, bucket, endpoint;
 
 console.log(process.env.R2_ENDPOINT);
@@ -52,6 +70,7 @@ if (process.env.PAYLOAD_PUBLIC_CLOUD_STORAGE_ADAPTER === "s3") {
     useTempFiles: true,
   };
 }
+
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -100,6 +119,20 @@ export default buildConfig({
         },
       },
     }),
+
+    seoPlugin({
+      collections: ["Blog", "AcademyBlog"],
+      generateTitle: ({ doc }: { doc: BlogDoc }) => {
+        console.log("Document in generateTitle:", doc);
+        return `${doc.Title?.value || "Default Title"}`;
+      },
+      generateDescription: ({ doc }: { doc: BlogDoc }) => {
+        return doc.Secondary_Text?.value || "Default Description";
+      },
+      generateImage: ({ doc }: { doc: BlogDoc }) => {
+        return doc.Cover_Image?.value;
+      },
+    } as PluginConfig),
   ],
   db: mongooseAdapter({
     url: process.env.DATABASE_URI,
